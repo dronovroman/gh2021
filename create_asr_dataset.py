@@ -42,9 +42,86 @@ for f in all_files:
         with open(f, 'w') as writer:
             writer.write(f_content)
 
-##########################
+
+#train
+train_files = glob.glob("data\\train\\*\\*", recursive=False) 
+l = []
+i=0
+for f in train_files:
+    d = dict()
+    i+=1
+    d['index'] = i
+    d['test_or_train'] = 'TRAIN'
+    d['filename'] = f.split('\\')[-1]
+    d['path_from_data_dir'] = str(f)[5:].replace('\\','/')
+    d['path_from_data_dir_windows'] = str(f)[5:].replace('\\','\\\\')
+    if '.wav' in str(f).lower():
+        d['is_converted_audio'] = 'FALSE'
+        d['is_audio'] = 'TRUE'
+        d['is_word_file'] = 'FALSE'
+        d['is_phonetic_file'] = 'FALSE'
+        d['is_sentence_file'] = 'FALSE'
+    else:
+        d['is_converted_audio'] = 'FALSE'
+        d['is_audio'] = 'FALSE'
+        d['is_word_file'] = 'FALSE'
+        d['is_phonetic_file'] = 'FALSE'
+        d['is_sentence_file'] = 'TRUE'
+
+    l.append(d)
+df = pd.DataFrame(l)
+df.to_csv('train_data.csv', mode = 'w', index=False)
 
 
+#train
+test_files = glob.glob("data\\test\\*\\*", recursive=False) 
+
+l = []
+i=0
+for f in test_files:
+    d = dict()
+    i+=1
+    d['index'] = i
+    d['test_or_train'] = 'TEST'
+    d['filename'] = f.split('\\')[-1]
+    d['path_from_data_dir'] = str(f)[5:].replace('\\','/')
+    d['path_from_data_dir_windows'] = str(f)[5:].replace('\\','\\\\')
+    if '.wav' in str(f).lower():
+        d['is_converted_audio'] = 'FALSE'
+        d['is_audio'] = 'TRUE'
+        d['is_word_file'] = 'FALSE'
+        d['is_phonetic_file'] = 'FALSE'
+        d['is_sentence_file'] = 'FALSE'
+    else:
+        d['is_converted_audio'] = 'FALSE'
+        d['is_audio'] = 'FALSE'
+        d['is_word_file'] = 'FALSE'
+        d['is_phonetic_file'] = 'FALSE'
+        d['is_sentence_file'] = 'TRUE'
+
+    l.append(d)
+df = pd.DataFrame(l)
+df.to_csv('test_data.csv', mode = 'w', index=False)
+time.sleep(1)
+all_files = glob.glob("*", recursive=False) 
+a = tarfile.open('asr_data.tar', 'w')
+for f in all_files:
+    if '.py' not in str(f):
+        a.add(f)
+    
+a.close()
+
+
+### show transcriptions\
+    
+os.chdir('E:\\gh2021\\asr_data')
+all_files = glob.glob("data\\*\\*\\*", recursive=False) 
+for f in all_files:
+    if '.txt' in str(f).lower():
+        print(f, ' : ')
+        with open(f, "r") as op: #, encoding="utf-8"
+                transcript = op.read()
+                print(transcript)
 
 
 
