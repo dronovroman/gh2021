@@ -1,6 +1,7 @@
 /raw_data
 /res
 /temp
+/asr_data
 .wav
 .exe
 .log
