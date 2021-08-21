@@ -56,7 +56,7 @@ def transcribeCall():
     # metad['transcription'] contains transcription
     y, sr = librosa.load(_path)
     hlf = int(len(y)/2)
-    yy = [y[:hlf], y[hlf:] ]
+    yy = [y[:hlf], y[hlf:] ] # splitting audio in half due to very high resource demand for 60 sec
     transcr = ""
     for prt in yy:    
         input_values = tokenizer(prt, return_tensors="pt", padding="longest").input_values 
