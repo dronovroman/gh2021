@@ -31,7 +31,7 @@ try:
 except:
     print('could not create folder ', folder)
 
-transcription_daemon_url='http://127.0.0.1:5001/'
+transcription_daemon_url='http://127.0.0.1:5001/'  # in prod this will be a part of global config
 
 #start proxy server
 server = Server("res\\browsermob-proxy\\bin\\browsermob-proxy.bat")

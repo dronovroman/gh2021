@@ -41,7 +41,7 @@ def index(filename):
     else:
         print('Processing ',str(_path))
         filepath = _path
-        t_transcribe = threading.Thread(name='speaker determination daemon', target=det_topicCall)
+        t_transcribe = threading.Thread(name='user topic modelling daemon', target=det_topicCall)
         t_transcribe.setDaemon(True)
         t_transcribe.start()
     return 'Topics thread has been started...'
@@ -117,4 +117,4 @@ def close_threads():
     
 atexit.register(close_threads)
 if __name__ == '__main__':
-  app.run(host='127.0.0.1', port = 5003)
+  app.run(host='127.0.0.1', port = 5004)

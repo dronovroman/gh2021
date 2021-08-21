@@ -8,9 +8,9 @@ Created on Sat Aug 21 11:56:23 2021
 
 ######################
 # use a set threshold for speaker recognition
-threshold = 0.38
+threshold = 0.38 # in prod this will be a part of global config
 # URL for downstream service to call....
-topic_daemon_url  = 'http://127.0.0.1:5003/'
+ABStopic_daemon_url  = 'http://127.0.0.1:5003/' # in prod this will be a part of global config
 ######################
 
 
@@ -91,7 +91,7 @@ def det_speakerCall():
     with open(f.replace('.wav','.json'), 'w') as jsf:
             json.dump(metad, jsf, indent=2)    
     logging.debug('Completed speaker determination...')
-    _ = requests.get(topic_daemon_url + abs_loc)
+    _ = requests.get(ABStopic_daemon_url + abs_loc)
 
 
 # cleaning
