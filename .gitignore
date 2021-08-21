@@ -2,9 +2,8 @@
 /res
 /temp
 /asr_data
-.tar
-.wav
-.wav
-.exe
-.log
+*.tar
+*.wav
+*.exe
+*.log
 
