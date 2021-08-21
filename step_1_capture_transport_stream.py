@@ -15,8 +15,10 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from browsermobproxy import Server
 import sys
 from datetime import datetime, timedelta
+from dateutil import parser
 import hashlib
 import json
+from bs4 import BeautifulSoup
 
 
 url ="https://parlview.aph.gov.au/mediaPlayer.php?videoID=551585&operation_mode=parlview"
@@ -47,7 +49,17 @@ proxy.new_har(ref_handle, options={'captureHeaders': True,'captureContent':True,
 driver = webdriver.Chrome('chromedriver',options=options,desired_capabilities=caps)
 driver.get(url)
 
-time.sleep(3)
+time.sleep(4)
+html = driver.page_source
+soup = BeautifulSoup(html, 'html.parser')
+
+try:
+    timedateinfo1 = soup.find_all('div', class_='media-view')[0]
+    timedateinfo2 = timedateinfo1.find('h2').get_text()
+    timedateinfo = parser.parse(timedateinfo2)
+except:
+    timedateinfo = 'unknown'
+
 driver.find_element_by_css_selector('[class="switch-image"]').click()
 
 
@@ -115,7 +127,7 @@ def update_meta():
     metad['source_url'] = url
     metad['folder'] = folder
     metad['_datetime'] = str(datetime.now())
-    metad['event_start'] = ''
+    metad['event_start'] = str(timedateinfo)
     metad['time_offset'] = str(datetime.now() - start_timestamp)
     metad['sequence_nr'] = counter
     metad['speakers'] = ''

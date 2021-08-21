@@ -9,7 +9,10 @@ Created on Sat Aug 21 11:56:23 2021
 ######################
 # use a set threshold for speaker recognition
 threshold = 0.38
+# URL for downstream service to call....
+topic_daemon_url  = 'http://127.0.0.1:5003/'
 ######################
+
 
 
 from flask import Flask
@@ -26,7 +29,7 @@ verification = SpeakerRecognition.from_hparams(source="speechbrain/spkrec-ecapa-
 
 import glob 
 import os
-import json
+import json, requests
 import atexit
 import logging
 import pandas as pd
@@ -84,10 +87,11 @@ def det_speakerCall():
     with open(f.replace('.wav','.json'), 'r') as jsf:
         metad = json.load(jsf)
     metad['speakers']=likely_speaker
+    abs_loc = os.path.abspath(_path)
     with open(f.replace('.wav','.json'), 'w') as jsf:
-            json.dump(metad, jsf, indent=2)
-  
+            json.dump(metad, jsf, indent=2)    
     logging.debug('Completed speaker determination...')
+    _ = requests.get(topic_daemon_url + abs_loc)
 
 
 # cleaning
