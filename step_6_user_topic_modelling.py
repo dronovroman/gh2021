@@ -14,7 +14,7 @@ import logging
 
 # path for debugging
 #pth = 'E:\\gh2021\\raw_data\\eedd150a524d388e5f8bd8bfbd81770b34197a8e57f41fa987507ee3ee5f2e8d\\2021-08-21-11-05-16.wav'
-threshold = 0.8 # using a rather high confidence threshold for topic cut-off
+threshold = 0.85 # using a rather high confidence threshold for topic cut-off
 
 from transformers import pipeline
 classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")

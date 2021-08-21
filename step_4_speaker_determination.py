@@ -66,7 +66,7 @@ def index(filename):
 
 def det_speakerCall():
     global model, tokenizer, filepath, t_transcribe, speakers, verification, _path, threshold
-    logging.debug('Starting speaker thread...')
+    logging.debug('Starting speaker determination thread...')
     f=_path # may need fixing
     l = []
     dr = dict()

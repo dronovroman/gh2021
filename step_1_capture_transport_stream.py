@@ -19,9 +19,20 @@ from dateutil import parser
 import hashlib
 import json
 from bs4 import BeautifulSoup
+from subprocess import check_call
 
 
-url ="https://parlview.aph.gov.au/mediaPlayer.php?videoID=551585&operation_mode=parlview"
+try:
+    url = str(sys.argv.pop())
+except:
+    url = ""
+
+if len(url)<10:
+    url = "https://parlview.aph.gov.au/mediaPlayer.php?videoID=551585&operation_mode=parlview"
+    url = "http://site-210922.bcvp0rtal.com/detail/videos/main-carousel/video/6268560231001/19-august---9.00-am---morning-session?autoStart=true"
+
+print(url)
+
 
 folder = str(hashlib.sha256(url.encode()).hexdigest())
 
@@ -53,14 +64,34 @@ time.sleep(4)
 html = driver.page_source
 soup = BeautifulSoup(html, 'html.parser')
 
+
+
+
 try:
     timedateinfo1 = soup.find_all('div', class_='media-view')[0]
     timedateinfo2 = timedateinfo1.find('h2').get_text()
     timedateinfo = parser.parse(timedateinfo2)
 except:
-    timedateinfo = 'unknown'
+    try:
+        timedateinfo1 = soup.find_all('div', class_='video-detail-info')[0]
+        timedateinfo2 = timedateinfo1.find('h1', {"class": "video-detail-title"}).get_text()
+        timedateinfo = parser.parse(timedateinfo2)
+    except:
+        timedateinfo = 'unknown'
+    
 
-driver.find_element_by_css_selector('[class="switch-image"]').click()
+# activating options for WA and Commonwealth Parliaments    
+
+try:
+    driver.find_element_by_css_selector('[class="switch-image"]').click()
+except:
+    pass
+
+try:
+    driver.find_element_by_css_selector('[class="vjs-big-play-button"]').click()
+except:
+    pass
+
 
 
 filename = ""
@@ -80,7 +111,7 @@ def parse_har():
         #make sure havent already downloaded this piece
         if _url in fetched:
             continue
-        if _url.endswith('.ts'):
+        if _url.endswith('.ts') or ('.ts?' in _url):
             found_nothing_new = False
             if not initial_data:
                 #check if this url had a valid response, if not, ignore it
@@ -134,6 +165,8 @@ def update_meta():
     metad['transcription'] = ''
     metad['l1_topics'] = ''
     metad['l2_topics'] = ''
+    metad['abs_covid_categories'] = ""
+    metad['abs_barriers_to_business'] = ""
     metad['restored_transcript'] = ''
     metad['alignment_to_datasets'] = str(dict())
     
@@ -151,7 +184,9 @@ while not global_end:
     if init_time + timedelta(seconds = 57) <= datetime.now()  :
         if filename != "": # try convert and delete
             print('file: ', filename)
+            flag_converted = False
             try:
+                assert filename.endswith('.mpeg')
                 clip = editor.AudioFileClip(filename)
                 clip.write_audiofile(filename.replace('mpeg', 'wav'),fps = 16000, codec='pcm_s16le')
                 with open(filename.replace('.mpeg','.json'), 'w') as jsf:
@@ -161,16 +196,32 @@ while not global_end:
                 abs_loc = str(os.path.abspath(filename.replace('mpeg', 'wav')))
                 r = requests.get(transcription_daemon_url+abs_loc)
                 print('converted to audio...')
+                flag_converted = True
             except:
-                print('could not convert to audio...')
-                pass
+                print('could not convert to audio with moviepy...')
+                
+            
+            if not flag_converted:
+                try:
+                    assert filename.endswith('.mpeg')
+                    inp_abs = os.path.abspath(filename)
+                    ffmpg = os.path.abspath('./res/ffmpeg/bin/ffmpeg.exe')
+                    ok = check_call([ffmpg,'-i',inp_abs,'-acodec','pcm_s16le', '-ac', '1', '-ar', '16000' ,inp_abs.replace('.mpeg','.wav')])
+                    abs_loc = str(os.path.abspath(filename.replace('.mpeg', '.wav')))
+                    with open(filename.replace('.mpeg','.json'), 'w') as jsf:
+                        json.dump(metad, jsf, indent=2)
+                    r = requests.get(transcription_daemon_url+abs_loc)
+                    print('converted to audio with ffmpeg...')
+                except:
+                    print('could not convert to audio with ffmpeg...')
+            
             try:
                 os.remove(filename)
                 print(filename, ' was removed')
-                pass
+                
             except:
                 print('could not remove ', filename)
-                pass # remove mpeg data to keep only wav
+                # remove mpeg data to keep only wav
         init_time = datetime.now()
         parse_har()
         update_meta()
@@ -186,6 +237,8 @@ driver.quit()
 
 
 ###
+
+
 
 
 

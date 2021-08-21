@@ -77,7 +77,7 @@ def transcribeCall():
         json.dump(metad, jsf, indent=2)
     print(str(both_parts)+'\n')
     logging.debug('Completed transcription...')
-    print('Traing to call the speaker determination daemon...')
+    print('Trying to call the speaker determination daemon...')
     _ = requests.get(speker_daemon_url + abs_loc)
 
 

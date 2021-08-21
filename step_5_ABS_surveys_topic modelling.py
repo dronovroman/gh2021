@@ -17,19 +17,17 @@ import atexit
 import logging
 
 ####
-threshold = 0.77 # this value will later be included into configuration file
+threshold = 0.85 # this value will later be included into configuration file
 abs_loc = ''
 ####
 
 topic_daemon_url  = 'http://127.0.0.1:5004/' # in prod this will be a part of global config
-
 
 import json
 import requests
 from transformers import pipeline
 import json, os
 import requests
-
 
 file_path=''
 app = Flask(__name__)
@@ -110,7 +108,7 @@ def det_ABS_topicCall():
 
     logging.debug('Completed topic determination...')
     # here we can call another service daemon if we meed to, and pass the file location in abs_loc
-
+    _ = requests.get(topic_daemon_url + abs_loc)
 
 # cleaning
 def close_threads():
