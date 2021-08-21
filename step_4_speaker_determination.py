@@ -86,8 +86,6 @@ def det_speakerCall():
     metad['speakers']=likely_speaker
     with open(f.replace('.wav','.json'), 'w') as jsf:
             json.dump(metad, jsf, indent=2)
-    
-    
   
     logging.debug('Completed speaker determination...')
 

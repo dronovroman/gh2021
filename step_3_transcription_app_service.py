@@ -16,6 +16,11 @@ import librosa
 import json
 import atexit
 import logging
+import requests
+
+
+# transcription daemon should call the speaker determination daemon once it finishes processing data...
+speker_daemon_url='http://127.0.0.1:5002/' # speaker deemon is now configured on this port
 
 
 ### folder_path = "E:\\project\\raw_data\\eedd150a524d388e5f8bd8bfbd81770b34197a8e57f41fa987507ee3ee5f2e8d"
@@ -51,6 +56,7 @@ def transcribeCall():
     global model, tokenizer, filepath
     _path = filepath
     metad = dict()
+    abs_loc = os.path.abspath(_path)
     with open(_path.replace('.wav','.json'), 'r') as jsf:
         metad = json.load(jsf)
     # metad['transcription'] contains transcription
@@ -71,6 +77,8 @@ def transcribeCall():
         json.dump(metad, jsf, indent=2)
     print(str(both_parts)+'\n')
     logging.debug('Completed transcription...')
+    print('Traing to call the speaker determination daemon...')
+    _ = requests.get(speker_daemon_url + abs_loc)
 
 
 # cleaning
