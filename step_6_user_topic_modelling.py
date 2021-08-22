@@ -41,9 +41,9 @@ def index(filename):
     else:
         print('Processing ',str(_path))
         filepath = _path
-        t_transcribe = threading.Thread(name='user topic modelling daemon', target=det_topicCall)
-        t_transcribe.setDaemon(True)
-        t_transcribe.start()
+        t_transcribe6 = threading.Thread(name='user topic modelling daemon', target=det_topicCall)
+        t_transcribe6.setDaemon(True)
+        t_transcribe6.start()
     return 'Topics thread has been started...'
 
 
@@ -92,12 +92,12 @@ def det_topicCall():
     l2 = get_high_prob_items(res_c, threshold)
     
     l1 = get_l1_basedon_l2(topics, list(l2.keys()))    
-    metad['l1_topics'] = l1
+    metad['l1_topics'] = list(set(l1))
     metad['l2_topics'] = list(l2.keys())
     print(l1, l2)
     with open(abs_loc.replace('.wav','.json'), 'w') as jsf:
         json.dump(metad, jsf, indent=2)
-    logging.debug('Completed topic determination...')
+    print('Completed topic determination...')
     # here we can call another service daemon if we meed to, and pass the file location in abs_loc
 
 
@@ -106,9 +106,9 @@ def close_threads():
     """
     stops all running daemon threads at exit
     """    
-    global t_transcribe    
+    global t_transcribe6    
     try:
-        t_transcribe.cancel()
+        t_transcribe6.cancel()
         print('Closed topic thread...')
     except:
         print('Could not close topic thread...')  

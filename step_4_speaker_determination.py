@@ -8,7 +8,7 @@ Created on Sat Aug 21 11:56:23 2021
 
 ######################
 # use a set threshold for speaker recognition
-threshold = 0.38 # in prod this will be a part of global config
+threshold = 0.45 # in prod this will be a part of global config
 # URL for downstream service to call....
 ABStopic_daemon_url  = 'http://127.0.0.1:5003/' # in prod this will be a part of global config
 ######################
@@ -56,9 +56,9 @@ def index(filename):
     else:
         print('Processing ',str(_path))
         filepath = _path
-        t_transcribe = threading.Thread(name='speaker determination daemon', target=det_speakerCall)
-        t_transcribe.setDaemon(True)
-        t_transcribe.start()
+        t_transcribe4 = threading.Thread(name='speaker determination daemon', target=det_speakerCall)
+        t_transcribe4.setDaemon(True)
+        t_transcribe4.start()
     return 'Speaker tread has been started...'
 
 
@@ -69,7 +69,6 @@ def det_speakerCall():
     logging.debug('Starting speaker determination thread...')
     f=_path # may need fixing
     l = []
-    dr = dict()
     for s in speakers.keys():
         d=dict()            
         score, prediction = verification.verify_files(speakers[s], f)    
@@ -89,7 +88,7 @@ def det_speakerCall():
     metad['speakers']=likely_speaker
     abs_loc = os.path.abspath(_path)
     with open(f.replace('.wav','.json'), 'w') as jsf:
-            json.dump(metad, jsf, indent=2)    
+        json.dump(metad, jsf, indent=2)    
     logging.debug('Completed speaker determination...')
     _ = requests.get(ABStopic_daemon_url + abs_loc)
 
@@ -99,9 +98,9 @@ def close_threads():
     """
     stops all running daemon threads at exit
     """    
-    global t_transcribe    
+    global t_transcribe4    
     try:
-        t_transcribe.cancel()
+        t_transcribe4.cancel()
         print('Closed transcription thread...')
     except:
         print('Could not close transcription thread...')  

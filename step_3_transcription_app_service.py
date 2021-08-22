@@ -23,8 +23,6 @@ import requests
 speker_daemon_url='http://127.0.0.1:5002/' # speaker deemon is now configured on this port
 
 
-### folder_path = "E:\\project\\raw_data\\eedd150a524d388e5f8bd8bfbd81770b34197a8e57f41fa987507ee3ee5f2e8d"
-
 tokenizer = Wav2Vec2Tokenizer.from_pretrained("res\\models\\wav2vec2-aph-cap")
 model = Wav2Vec2ForCTC.from_pretrained("res\\models\\wav2vec2-aph-cap\\checkpoint-3000")
 file_path=''
@@ -44,9 +42,9 @@ def index(filename):
     else:
         print('Processing ',str(_path))
         filepath = _path
-        t_transcribe = threading.Thread(name='trancription daemon', target=transcribeCall)
-        t_transcribe.setDaemon(True)
-        t_transcribe.start()
+        t_transcribe3 = threading.Thread(name='trancription_daemon', target=transcribeCall)
+        t_transcribe3.setDaemon(True)
+        t_transcribe3.start()
     return 'Transcription tread has been started...'
 
 
@@ -60,7 +58,8 @@ def transcribeCall():
     with open(_path.replace('.wav','.json'), 'r') as jsf:
         metad = json.load(jsf)
     # metad['transcription'] contains transcription
-    y, sr = librosa.load(_path)
+    y, sr = librosa.load(_path, sr=16000)
+    print('\n', _path, ', sample rate: ', sr)
     hlf = int(len(y)/2)
     yy = [y[:hlf], y[hlf:] ] # splitting audio in half due to very high resource demand for 60 sec
     transcr = ""
@@ -86,9 +85,9 @@ def close_threads():
     """
     stops all running daemon threads at exit
     """    
-    global t_transcribe    
+    global t_transcribe3    
     try:
-        t_transcribe.cancel()
+        t_transcribe3.cancel()
         print('Closed transcription thread...')
     except:
         print('Could not close transcription thread...')  

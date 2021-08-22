@@ -73,9 +73,9 @@ def index(filename):
     else:
         print('Processing ',str(_path))
         filepath = _path
-        t_transcribe = threading.Thread(name='ABS surveys topic modelling daemon', target=det_ABS_topicCall)
-        t_transcribe.setDaemon(True)
-        t_transcribe.start()
+        t_transcribe5 = threading.Thread(name='ABS surveys topic modelling daemon', target=det_ABS_topicCall)
+        t_transcribe5.setDaemon(True)
+        t_transcribe5.start()
     return 'ABS Surveys topic modelling thread has been started...'
 
 
@@ -104,7 +104,7 @@ def det_ABS_topicCall():
     print('ABS business impediments survey topics: ', returns)
     # write data back to object
     with open(abs_loc.replace('.wav','.json'), 'w') as jsf:
-           json.dump(metad, jsf, indent=2)
+        json.dump(metad, jsf, indent=2)
 
     logging.debug('Completed topic determination...')
     # here we can call another service daemon if we meed to, and pass the file location in abs_loc
@@ -115,9 +115,9 @@ def close_threads():
     """
     stops all running daemon threads at exit
     """    
-    global t_transcribe    
+    global t_transcribe5    
     try:
-        t_transcribe.cancel()
+        t_transcribe5.cancel()
         print('Closed topic thread...')
     except:
         print('Could not close topic thread...')  

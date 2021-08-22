@@ -29,7 +29,8 @@ except:
 
 if len(url)<10:
     url = "https://parlview.aph.gov.au/mediaPlayer.php?videoID=551585&operation_mode=parlview"
-    url = "http://site-210922.bcvp0rtal.com/detail/videos/main-carousel/video/6268560231001/19-august---9.00-am---morning-session?autoStart=true"
+    url = 'https://parlview.aph.gov.au/mediaPlayer.php?videoID=551149&operation_mode=parlview'
+    #url = "http://site-210922.bcvp0rtal.com/detail/videos/main-carousel/video/6268560231001/19-august---9.00-am---morning-session?autoStart=true"
 
 print(url)
 
@@ -184,7 +185,7 @@ while not global_end:
     if init_time + timedelta(seconds = 57) <= datetime.now()  :
         if filename != "": # try convert and delete
             print('file: ', filename)
-            flag_converted = False
+            
             try:
                 assert filename.endswith('.mpeg')
                 clip = editor.AudioFileClip(filename)
@@ -194,10 +195,11 @@ while not global_end:
                 # after conversion - we call a transcription daemon
                 time.sleep(.1)
                 abs_loc = str(os.path.abspath(filename.replace('mpeg', 'wav')))
-                r = requests.get(transcription_daemon_url+abs_loc)
+                _ = requests.get(transcription_daemon_url+abs_loc)
                 print('converted to audio...')
                 flag_converted = True
             except:
+                flag_converted = False
                 print('could not convert to audio with moviepy...')
                 
             
@@ -210,7 +212,8 @@ while not global_end:
                     abs_loc = str(os.path.abspath(filename.replace('.mpeg', '.wav')))
                     with open(filename.replace('.mpeg','.json'), 'w') as jsf:
                         json.dump(metad, jsf, indent=2)
-                    r = requests.get(transcription_daemon_url+abs_loc)
+                    flag_converted = True
+                    _ = requests.get(transcription_daemon_url+abs_loc)
                     print('converted to audio with ffmpeg...')
                 except:
                     print('could not convert to audio with ffmpeg...')
